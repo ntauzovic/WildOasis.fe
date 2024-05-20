@@ -1,6 +1,38 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
 
+/*export async function getBookings() {
+  let { data, error } = await supabase
+    .from("bookings")
+    .select(
+      "id, created_at,startData,endDate,numNightsnumGuests,status,totalPrice, cabins(name),guests(email)"
+    );
+  console.log(data + "nubbux");
+  if (error) {
+    console.error(error);
+    console.log(data);
+
+    throw new Error("Booking not be loaded");
+  }
+
+  return data;
+}*/
+
+export async function getBookings() {
+  // eslint-disable-next-line no-unused-vars
+  let { data, error } = await supabase
+    .from("bookings")
+    .select("*, cabins(*), guests(*)");
+
+  if (error) {
+    console.error(error);
+    console.log(data);
+    throw new Error("Cabines not to be loaded");
+  }
+
+  return data;
+}
+
 export async function getBooking(id) {
   const { data, error } = await supabase
     .from("bookings")
