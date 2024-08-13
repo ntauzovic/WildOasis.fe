@@ -66,9 +66,9 @@ function MainNav() {
             <HiCalendarDays />
             Bookings
           </StyledNavLink>
-          <StyledNavLink to="/account">
+          <StyledNavLink to="/users">
             <RiAccountCircleFill />
-            Account
+            Users
           </StyledNavLink>
           <StyledNavLink to="/cabins">
             <HiHomeModern />

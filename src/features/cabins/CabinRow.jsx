@@ -9,6 +9,7 @@ import Model from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 const Img = styled.img`
   display: block;
@@ -36,10 +37,15 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `;
+const IconButton = styled.button`
+  background-color: ${(props) => (props.isDarkMode ? "blue" : "transparent")};
+`;
 
 // eslint-disable-next-line react/prop-types
 function CabinRow({ cabin }) {
   // eslint-disable-next-line react/prop-types
+
+  const { isDarkMode } = useDarkMode();
   const {
     id: cabineId,
     name,
@@ -73,23 +79,23 @@ function CabinRow({ cabin }) {
           <span>&mdash;</span>
         )}
         <div>
-          <button onClick={handleDeuplicate}>
+          <IconButton onClick={handleDeuplicate} isDarkMode={isDarkMode}>
             <HiSquare2Stack />
-          </button>
+          </IconButton>
           <Model>
             <Model.Open opens="edit">
-              <button>
+              <IconButton isDarkMode={isDarkMode}>
                 <HiPencil />
-              </button>
+              </IconButton>
             </Model.Open>
             <Model.Window name="edit">
               <CreateCabinForm cabinToEdit={cabin} />
             </Model.Window>
 
             <Model.Open opens="delete">
-              <button>
+              <IconButton isDarkMode={isDarkMode}>
                 <HiTrash />
-              </button>
+              </IconButton>
             </Model.Open>
             <Model.Window name="delete">
               <ConfirmDelete
@@ -99,14 +105,6 @@ function CabinRow({ cabin }) {
               />
             </Model.Window>
           </Model>
-          <Menus.Menu id={cabineId}>
-            <Menus.Toggle id={cabineId} />
-            <Menus.List>
-              <Menus.Button>Duplicate</Menus.Button>
-              <Menus.Button>Editing</Menus.Button>
-              <Menus.Button>Delete</Menus.Button>
-            </Menus.List>
-          </Menus.Menu>
         </div>
       </Table.Row>
     </>

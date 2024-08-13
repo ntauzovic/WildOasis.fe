@@ -1,3 +1,4 @@
+import { PAGE_SIZE } from "../utils/constants";
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
 
@@ -18,19 +19,32 @@ import supabase from "./supabase";
   return data;
 }*/
 
-export async function getBookings() {
-  // eslint-disable-next-line no-unused-vars
-  let { data, error } = await supabase
+export async function getBookings({ filter, sortBy, page }) {
+  let query = supabase
     .from("bookings")
-    .select("*, cabins(*), guests(*)");
+    .select("*, cabins(*), guests(*)", { count: "exact" });
 
+  if (filter) query = query.eq(filter.field, filter.value);
+
+  if (sortBy)
+    query = query.order(sortBy.field, {
+      ascending: sortBy.direction === "asc",
+    });
+
+  if (page) {
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
   if (error) {
     console.error(error);
     console.log(data);
     throw new Error("Cabines not to be loaded");
   }
 
-  return data;
+  return { data, count };
 }
 
 export async function getBooking(id) {
@@ -49,6 +63,7 @@ export async function getBooking(id) {
 }
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
+
 export async function getBookingsAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
@@ -85,7 +100,7 @@ export async function getStaysAfterDate(date) {
 export async function getStaysTodayActivity() {
   const { data, error } = await supabase
     .from("bookings")
-    .select("*, guests(fullName, nationality, countryFlag)")
+    .select("*, guests(fullName, countryFlag)")
     .or(
       `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
     )
@@ -99,6 +114,8 @@ export async function getStaysTodayActivity() {
     console.error(error);
     throw new Error("Bookings could not get loaded");
   }
+  console.log(data);
+
   return data;
 }
 
